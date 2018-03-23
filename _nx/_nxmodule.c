@@ -154,14 +154,39 @@ _nx_fs_mount_savedata(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+PyDoc_STRVAR(_nx_fsdev_unmount_device_doc, ""); // TODO
+
+static PyObject *
+_nx_fsdev_unmount_device(PyObject *self, PyObject *args)
+{
+    const char *mountpoint;
+    int ret;
+
+    if (!PyArg_ParseTuple(args, "s", &mountpoint))
+        return NULL;
+
+    ret = fsdevUnmountDevice(mountpoint);
+    if (ret == -1) {
+        PyErr_SetString(PyExc_OSError, "fsdevUnmountDevice() Failed");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
 /* end fs */
 
 static PyMethodDef module_methods[] = {
+    /* hid */
     {"hid_scan_input", _nx_hid_scan_input, METH_NOARGS, _nx_hid_scan_input_doc},
     {"hid_keys_down", _nx_hid_keys_down, METH_VARARGS, _nx_hid_keys_down_doc},
+    /* account */
     {"account_initialize", _nx_account_initialize, METH_NOARGS, _nx_account_initialize_doc},
     {"account_get_active_user", _nx_account_get_active_user, METH_NOARGS, _nx_account_get_active_user_doc},
+    /* fs */
     {"fs_mount_savedata", _nx_fs_mount_savedata, METH_VARARGS, _nx_fs_mount_savedata_doc},
+    {"fsdev_unmount_device", _nx_fsdev_unmount_device, METH_VARARGS, _nx_fsdev_unmount_device_doc},
     {NULL, NULL}
 };
 
