@@ -177,6 +177,66 @@ _nx_fsdev_unmount_device(PyObject *self, PyObject *args)
 
 /* end fs */
 
+/* gfx */
+
+PyDoc_STRVAR(_nx_gfx_set_mode_doc, ""); // TODO
+
+static PyObject *
+_nx_gfx_set_mode(PyObject *self, PyObject *args)
+{
+    GfxMode mode;
+
+    if (!PyArg_ParseTuple(args, "i", &mode))
+        return NULL;
+
+    gfxSetMode(mode);
+
+    Py_RETURN_NONE;
+}
+
+
+PyDoc_STRVAR(_nx_gfx_set_framebuffer_doc, ""); // TODO
+
+static PyObject *
+_nx_gfx_set_framebuffer(PyObject *self, PyObject *args)
+{
+    Py_buffer fb_in;
+    u32 width, height;
+    u8 *fb_out;
+
+    if (!PyArg_ParseTuple(args, "y*", &fb_in))
+        return NULL;
+
+    fb_out = gfxGetFramebuffer(&width, &height);
+
+    if (fb_in.len != width*height*4) {
+        PyErr_SetString(PyExc_ValueError, "Invalid input buffer size");
+        PyBuffer_Release(&fb_in);
+        return NULL;
+    }
+
+    memcpy(fb_out, fb_in.buf, fb_in.len);
+
+    PyBuffer_Release(&fb_in);
+
+    Py_RETURN_NONE;
+}
+
+
+PyDoc_STRVAR(_nx_gfx_flush_and_sync_doc, ""); // TODO
+
+static PyObject *
+_nx_gfx_flush_and_sync(PyObject *self, PyObject *args)
+{
+    gfxFlushBuffers();
+    gfxSwapBuffers();
+    gfxWaitForVsync();
+
+    Py_RETURN_NONE;
+}
+
+/* end gfx */
+
 static PyMethodDef module_methods[] = {
     /* hid */
     {"hid_scan_input", _nx_hid_scan_input, METH_NOARGS, _nx_hid_scan_input_doc},
@@ -187,6 +247,10 @@ static PyMethodDef module_methods[] = {
     /* fs */
     {"fs_mount_savedata", _nx_fs_mount_savedata, METH_VARARGS, _nx_fs_mount_savedata_doc},
     {"fsdev_unmount_device", _nx_fsdev_unmount_device, METH_VARARGS, _nx_fsdev_unmount_device_doc},
+    /* gfx */
+    {"gfx_set_mode", _nx_gfx_set_mode, METH_VARARGS, _nx_gfx_set_mode_doc},
+    {"gfx_set_framebuffer", _nx_gfx_set_framebuffer, METH_VARARGS, _nx_gfx_set_framebuffer_doc},
+    {"gfx_flush_and_sync", _nx_gfx_flush_and_sync, METH_NOARGS, _nx_gfx_flush_and_sync_doc},
     {NULL, NULL}
 };
 
