@@ -175,6 +175,27 @@ _nx_fsdev_unmount_device(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+PyDoc_STRVAR(_nx_fsdev_commit_device_doc, ""); // TODO
+
+static PyObject *
+_nx_fsdev_commit_device(PyObject *self, PyObject *args)
+{
+    const char *mountpoint;
+    int ret;
+
+    if (!PyArg_ParseTuple(args, "s", &mountpoint))
+        return NULL;
+
+    ret = fsdevCommitDevice(mountpoint);
+    if (ret == -1) {
+        PyErr_SetString(PyExc_OSError, "fsdevCommitDevice() Failed");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
 /* end fs */
 
 /* gfx */
@@ -247,6 +268,7 @@ static PyMethodDef module_methods[] = {
     /* fs */
     {"fs_mount_savedata", _nx_fs_mount_savedata, METH_VARARGS, _nx_fs_mount_savedata_doc},
     {"fsdev_unmount_device", _nx_fsdev_unmount_device, METH_VARARGS, _nx_fsdev_unmount_device_doc},
+    {"fsdev_commit_device", _nx_fsdev_commit_device, METH_VARARGS, _nx_fsdev_commit_device_doc},
     /* gfx */
     {"gfx_set_mode", _nx_gfx_set_mode, METH_VARARGS, _nx_gfx_set_mode_doc},
     {"gfx_set_framebuffer", _nx_gfx_set_framebuffer, METH_VARARGS, _nx_gfx_set_framebuffer_doc},
