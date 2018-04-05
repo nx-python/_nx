@@ -86,6 +86,34 @@ _nx_hid_keys_down(PyObject *self, PyObject *args)
     return PyLong_FromUnsignedLong(result);
 }
 
+
+PyDoc_STRVAR(_nx_hid_get_touches_doc, ""); // TODO
+
+static PyObject *
+_nx_hid_get_touches(PyObject *self, PyObject *args)
+{
+    PyObject *touch_list, *touch_entry_tmp;
+    unsigned long touch_count;
+    touchPosition pos;
+
+    touch_count = hidTouchCount();
+    touch_list = PyList_New(touch_count);
+
+    for (int i = 0; i < touch_count; i++) {
+        hidTouchRead(&pos, i);
+        touch_entry_tmp = Py_BuildValue("(IIIII)",
+            pos.px, pos.py, pos.dx, pos.dy, pos.angle);
+
+        if (touch_entry_tmp == NULL)
+            return NULL; // maybe I should decref stuff on failure?
+
+        if (PyList_SetItem(touch_list, i, touch_entry_tmp) < 0)
+            return NULL;
+    }
+
+    return touch_list;
+}
+
 /* end hid */
 
 /* account */
@@ -262,6 +290,7 @@ static PyMethodDef module_methods[] = {
     /* hid */
     {"hid_scan_input", _nx_hid_scan_input, METH_NOARGS, _nx_hid_scan_input_doc},
     {"hid_keys_down", _nx_hid_keys_down, METH_VARARGS, _nx_hid_keys_down_doc},
+    {"hid_get_touches", _nx_hid_get_touches, METH_NOARGS, _nx_hid_get_touches_doc},
     /* account */
     {"account_initialize", _nx_account_initialize, METH_NOARGS, _nx_account_initialize_doc},
     {"account_get_active_user", _nx_account_get_active_user, METH_NOARGS, _nx_account_get_active_user_doc},
