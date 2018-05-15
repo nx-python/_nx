@@ -307,7 +307,7 @@ static PyMethodDef module_methods[] = {
 
 struct PyModuleDef _PyNX_Module = {
     PyModuleDef_HEAD_INIT,
-    "nx",
+    "_nx",
     module_doc,
     -1,
     module_methods,
