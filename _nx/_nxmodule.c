@@ -99,7 +99,7 @@ _nx_hid_get_touches(PyObject *self, PyObject *args)
     touch_count = hidTouchCount();
     touch_list = PyList_New(touch_count);
 
-    for (int i = 0; i < touch_count; i++) {
+    for (unsigned long i = 0; i < touch_count; i++) {
         hidTouchRead(&pos, i);
         touch_entry_tmp = Py_BuildValue("(IIIII)",
             pos.px, pos.py, pos.dx, pos.dy, pos.angle);
